@@ -25,7 +25,9 @@
 
             util.get_broken_links();
 
-            util.print_valid_links();
+            util.print_connected_links();
+
+            util.print_invalid_links();
 
             util.print_broken_links();
 

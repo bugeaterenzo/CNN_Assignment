@@ -22,13 +22,15 @@ public class Utilities
     private WebDriver driver;
     private List<WebElement> links;
     private Map<String,Map> brokenLinks;
-    private Map<String,Map> validLinks;
+    private Map<String,Map> connectedLinks;
+    private int count_Kaput_links;
 
     public Utilities(WebDriver driver)
     {
         this.driver = driver;
         this.brokenLinks = new LinkedHashMap<>();
-        this.validLinks = new LinkedHashMap<>();
+        this.connectedLinks = new LinkedHashMap<>();
+        this.count_Kaput_links = 0;
 
     }
 
@@ -83,7 +85,7 @@ public class Utilities
 
         for (WebElement link : links)
         {
-            String url = "empty";
+            String url = "unkown";
             String link_text = " unknown ";
 
             try
@@ -96,12 +98,15 @@ public class Utilities
                 links = driver.findElements(By.tagName("a"));
             }
 
+
             // Check if the URL is valid
             if (url == null || !url.startsWith("http"))
             {
+                count_Kaput_links++;
                 continue;
             }
 
+            
 
             Map responses = new LinkedHashMap<String , Integer>();
 
@@ -127,12 +132,14 @@ public class Utilities
                     else
                     {
                         responses.put(url, responseCode);
-                        validLinks.put(link_text, responses);
+                        connectedLinks.put(link_text, responses);
                     }
                 }
                 catch ( Exception e)
                 {
+                    
                      System.out.println("Error checking link: " + url + " - " + e.getMessage());
+                    
                 }
             }
         }
@@ -154,7 +161,7 @@ public class Utilities
         }
         else
         {
-            System.out.printf("%-30s %-60s %-10s%n", "Link Text", "URL", "Response Code"); // Table header
+            System.out.printf("%-30s %-60s %-10s%n", "Link Text", "URL", "Response Code");
             System.out.println("---------------------------------------------------------------------------------------------------------");
             for (Map.Entry<String, Map> brokenLink : brokenLinks.entrySet())
             {
@@ -177,22 +184,22 @@ public class Utilities
 
 
 
-    public void print_valid_links ()
+    public void print_connected_links ()
     {
 
         System.out.println("\n\n************** ***************** *************\n");
-        System.out.println("\nList of valid links:\n");
+        System.out.println("\nList of connected links:\n");
 
 
-        if (validLinks.size() == 0)
+        if (connectedLinks.size() == 0)
         {
-            System.out.println("\n************** NO Valid Links Were Found *************\n");
+            System.out.println("\n************** NO Connected Links Were Found *************\n");
         }
         else
         {
             System.out.printf("%-30s %-60s %-10s%n", "Link Text", "URL", "Response Code"); // Table header
             System.out.println("---------------------------------------------------------------------------------------------------------");
-            for (Map.Entry<String, Map> validLink : validLinks.entrySet())
+            for (Map.Entry<String, Map> validLink : connectedLinks.entrySet())
             {
 
                 String linktext = validLink.getKey();
@@ -211,6 +218,29 @@ public class Utilities
         }
     }
 
+
+    public void print_invalid_links ()
+    {
+
+        System.out.println("\n\n************** ***************** *************\n");
+        System.out.println("\nList of invalid links:\n");
+
+
+            if (count_Kaput_links == 0)
+            {
+                System.out.println("\n************** NO Invalid Links Were Found *************\n");
+            }
+            else
+            {
+                System.out.print("::  __Total Invalid Links Found__  :: ");
+                System.out.print("\t ===>\t");
+                System.out.println(count_Kaput_links);
+
+
+
+            }
+
+    }
 
 
 
